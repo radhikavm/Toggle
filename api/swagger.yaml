@@ -1,0 +1,186 @@
+swagger: "2.0"
+info:
+  description: "Deputy test api to add roles and users and fetch them"
+  version: "1.0.0"
+  title: "Deputy Swagger api"
+host: "localhost:8080"
+basePath: "/"
+schemes:
+- "http"
+paths:
+  /users:
+    get:
+      description: "Returns 'users' to the caller"
+      operationId: "getAll"
+      parameters: []
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/GeneralResponse"
+        default:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-swagger-router-controller: "Default"
+  /users/setUsers:
+    post:
+      summary: "Creates list of users with given input array"
+      description: ""
+      operationId: "createUsers"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of user objects"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/GeneralResponse"
+        400:
+          description: "Error adding users please check the format"
+        405:
+          description: "Invalid input"  
+      x-swagger-router-controller: "Default"
+  /users/subordinates/{id}:
+    get:
+      summary: "Returns all subordinate 'users' to this role"
+      description: "Returns all subordinate 'users' to this role"
+      operationId: "getSubordinates"
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: number
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/GeneralResponse"
+        default:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-swagger-router-controller: "Default"
+  /users/roles:
+    get:
+      description: "Returns 'role' to the caller"
+      operationId: "getAllRoles"
+      parameters: []
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Role"
+        default:
+          description: "Error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-swagger-router-controller: "Default"
+  /users/setRoles:
+    post:
+      description: "Adds a list of roles"
+      operationId: "createRoles"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Add roles"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Role"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Role"
+        400:
+          description: "Something went wrong while fetching"
+      x-swagger-router-controller: "Default"
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      role:
+        type: "integer"
+        format: "int32"
+        description: "User Role"
+    xml:
+      name: "User"
+    example:
+      role: 6
+      name: "name"
+      id: 0
+    required:
+      - id
+      - name
+      - role
+  Role:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      parent:
+        type: "integer"
+        format: "int32"
+        description: "User Roles role zero means root"
+        default: 0
+    required:
+      - id
+      - name
+    xml:
+      name: "User"
+    example:
+      parent: 6
+      name: "name"
+      id: 1
+  GeneralResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: returns 1 if successful
+      description:
+        type: string
+        description: a short comment 
+    required:
+      - success
+      - description    
+  ErrorResponse:
+    required:
+    - "id"
+    properties:
+      id:
+        type: "number"
+      description:
+        type: string
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
